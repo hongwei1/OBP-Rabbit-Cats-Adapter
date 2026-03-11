@@ -75,50 +75,54 @@ case class AdapterConfig(
 
 object Config {
 
+  /** Read a config value: env var takes priority, then system property, then default */
+  private def env(key: String, default: String): String =
+    sys.env.getOrElse(key, sys.props.getOrElse(key, default))
+
   /** Load configuration from environment variables */
   def load: IO[AdapterConfig] = IO {
     val httpConfig = HttpConfig(
-      host = sys.env.getOrElse("HTTP_HOST", "0.0.0.0"),
-      port = sys.env.getOrElse("HTTP_PORT", "52345").toInt,
-      enabled = sys.env.getOrElse("HTTP_ENABLED", "true").toBoolean,
+      host = env("HTTP_HOST", "0.0.0.0"),
+      port = env("HTTP_PORT", "52345").toInt,
+      enabled = env("HTTP_ENABLED", "true").toBoolean,
       apiExplorerUrl =
-        sys.env.getOrElse("API_EXPLORER_URL", "http://localhost:5173"),
-      obpApiUrl = sys.env.getOrElse("OBP_API_URL", "http://localhost:8080")
+        env("API_EXPLORER_URL", "http://localhost:5173"),
+      obpApiUrl = env("OBP_API_URL", "http://localhost:8080")
     )
 
     val rabbitmqConfig = RabbitMQConfig(
-      host = sys.env.getOrElse("RABBITMQ_HOST", "localhost"),
-      port = sys.env.getOrElse("RABBITMQ_PORT", "5672").toInt,
-      virtualHost = sys.env.getOrElse("RABBITMQ_VIRTUAL_HOST", "/"),
-      username = sys.env.getOrElse("RABBITMQ_USERNAME", "guest"),
-      password = sys.env.getOrElse("RABBITMQ_PASSWORD", "guest"),
+      host = env("RABBITMQ_HOST", "localhost"),
+      port = env("RABBITMQ_PORT", "5672").toInt,
+      virtualHost = env("RABBITMQ_VIRTUAL_HOST", "/"),
+      username = env("RABBITMQ_USERNAME", "guest"),
+      password = env("RABBITMQ_PASSWORD", "guest"),
       connectionTimeout =
-        sys.env.getOrElse("RABBITMQ_CONNECTION_TIMEOUT", "30").toInt.seconds,
+        env("RABBITMQ_CONNECTION_TIMEOUT", "30").toInt.seconds,
       requestedHeartbeat =
-        sys.env.getOrElse("RABBITMQ_HEARTBEAT", "60").toInt.seconds,
+        env("RABBITMQ_HEARTBEAT", "60").toInt.seconds,
       automaticRecovery =
-        sys.env.getOrElse("RABBITMQ_AUTOMATIC_RECOVERY", "true").toBoolean
+        env("RABBITMQ_AUTOMATIC_RECOVERY", "true").toBoolean
     )
 
     val queueConfig = QueueConfig(
-      requestQueue = sys.env.getOrElse("RABBITMQ_REQUEST_QUEUE", "obp.request"),
+      requestQueue = env("RABBITMQ_REQUEST_QUEUE", "obp.request"),
       responseQueue =
-        sys.env.getOrElse("RABBITMQ_RESPONSE_QUEUE", "obp.response"),
-      prefetchCount = sys.env.getOrElse("RABBITMQ_PREFETCH_COUNT", "10").toInt,
-      durable = sys.env.getOrElse("RABBITMQ_QUEUE_DURABLE", "true").toBoolean,
+        env("RABBITMQ_RESPONSE_QUEUE", "obp.response"),
+      prefetchCount = env("RABBITMQ_PREFETCH_COUNT", "10").toInt,
+      durable = env("RABBITMQ_QUEUE_DURABLE", "true").toBoolean,
       autoDelete =
-        sys.env.getOrElse("RABBITMQ_QUEUE_AUTO_DELETE", "false").toBoolean
+        env("RABBITMQ_QUEUE_AUTO_DELETE", "false").toBoolean
     )
 
     val redisConfig = RedisConfig(
-      host = sys.env.getOrElse("REDIS_HOST", "localhost"),
-      port = sys.env.getOrElse("REDIS_PORT", "6379").toInt,
-      enabled = sys.env.getOrElse("REDIS_ENABLED", "true").toBoolean
+      host = env("REDIS_HOST", "localhost"),
+      port = env("REDIS_PORT", "6379").toInt,
+      enabled = env("REDIS_ENABLED", "true").toBoolean
     )
 
     val grpcConfig = GrpcConfig(
-      port = sys.env.getOrElse("GRPC_PORT", "50051").toInt,
-      enabled = sys.env.getOrElse("GRPC_ENABLED", "false").toBoolean
+      port = env("GRPC_PORT", "50051").toInt,
+      enabled = env("GRPC_ENABLED", "false").toBoolean
     )
 
     AdapterConfig(
@@ -127,8 +131,8 @@ object Config {
       queue = queueConfig,
       redis = redisConfig,
       grpc = grpcConfig,
-      logLevel = sys.env.getOrElse("LOG_LEVEL", "INFO"),
-      enableMetrics = sys.env.getOrElse("ENABLE_METRICS", "true").toBoolean
+      logLevel = env("LOG_LEVEL", "INFO"),
+      enableMetrics = env("ENABLE_METRICS", "true").toBoolean
     )
   }
 
