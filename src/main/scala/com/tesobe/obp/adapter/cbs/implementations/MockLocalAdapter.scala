@@ -22,6 +22,7 @@ import com.tesobe.obp.adapter.interfaces._
 import com.tesobe.obp.adapter.models._
 import com.tesobe.obp.adapter.telemetry.Telemetry
 import io.circe._
+import scala.collection.mutable
 
 /**
  * Mock Local Adapter for testing and development.
@@ -38,6 +39,8 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
 
   override def name: String = "Mock-Local-Adapter"
   override def version: String = "1.0.0"
+
+  private val transactionStorage: mutable.Map[String, mutable.ListBuffer[Json]] = mutable.Map.empty
 
   override def handleMessage(
     process: String,
@@ -267,6 +270,77 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
   private def makePaymentv210(data: JsonObject, callContext: CallContext): IO[LocalAdapterResult] = {
     val amount = data("amount").flatMap(_.asString).getOrElse("0.00")
     val currency = data("currency").flatMap(_.asString).getOrElse("EUR")
+    val description = data("description").flatMap(_.asString).getOrElse("Payment via makePaymentv210")
+    val fromAccountId = data("fromAccountId").flatMap(_.asString)
+      .orElse(data("from_account_id").flatMap(_.asString))
+      .getOrElse("acc-001")
+    val toAccountId = data("toAccountId").flatMap(_.asString)
+      .orElse(data("to_account_id").flatMap(_.asString))
+      .orElse(data("to").flatMap(_.asObject).flatMap(_("account_id")).flatMap(_.asString))
+      .getOrElse("acc-002")
+    val toBankId = data("toBankId").flatMap(_.asString)
+      .orElse(data("to_bank_id").flatMap(_.asString))
+      .orElse(data("to").flatMap(_.asObject).flatMap(_("bank_id")).flatMap(_.asString))
+      .getOrElse("workshop-bank-001")
+
+    val transactionId = s"tx-workshop-${System.currentTimeMillis()}"
+    val timestamp = {
+      val instant = java.time.Instant.now()
+      val truncated = instant.truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
+      truncated.toString
+    }
+
+    val transaction = Json.obj(
+      "uuid" -> Json.fromString(s"uuid-$transactionId"),
+      "id" -> Json.obj("value" -> Json.fromString(transactionId)),
+      "thisAccount" -> Json.obj(
+        "accountId" -> Json.obj("value" -> Json.fromString(fromAccountId)),
+        "accountType" -> Json.fromString("CURRENT"),
+        "balance" -> Json.fromString("4950.00"),
+        "currency" -> Json.fromString(currency),
+        "name" -> Json.fromString("Workshop Account"),
+        "label" -> Json.fromString("Workshop Account"),
+        "number" -> Json.fromString(fromAccountId),
+        "bankId" -> Json.obj("value" -> Json.fromString("workshop-bank-001")),
+        "lastUpdate" -> Json.fromString(timestamp),
+        "branchId" -> Json.fromString("branch-001"),
+        "accountRoutings" -> Json.arr(
+          Json.obj(
+            "scheme" -> Json.fromString("IBAN"),
+            "address" -> Json.fromString("DE89370400440532013000")
+          )
+        ),
+        "accountRules" -> Json.arr(),
+        "accountHolder" -> Json.fromString("Workshop User"),
+        "attributes" -> Json.arr()
+      ),
+      "otherAccount" -> Json.obj(
+        "kind" -> Json.fromString("DEBIT"),
+        "counterpartyId" -> Json.fromString(s"cp-$toAccountId"),
+        "counterpartyName" -> Json.fromString("Payment Recipient"),
+        "thisBankId" -> Json.obj("value" -> Json.fromString("workshop-bank-001")),
+        "thisAccountId" -> Json.obj("value" -> Json.fromString(fromAccountId)),
+        "otherBankRoutingScheme" -> Json.fromString("BIC"),
+        "otherBankRoutingAddress" -> Json.fromString("RECIPBIC0"),
+        "otherAccountRoutingScheme" -> Json.fromString("IBAN"),
+        "otherAccountRoutingAddress" -> Json.fromString("DE98765432109876543210"),
+        "otherAccountProvider" -> Json.fromString("OBP"),
+        "isBeneficiary" -> Json.fromBoolean(true)
+      ),
+      "transactionType" -> Json.fromString("DEBIT"),
+      "amount" -> Json.fromString(amount),
+      "currency" -> Json.fromString(currency),
+      "description" -> Json.fromString(description),
+      "startDate" -> Json.fromString(timestamp),
+      "finishDate" -> Json.fromString(timestamp),
+      "balance" -> Json.fromString("4950.00"),
+      "status" -> Json.fromString("COMPLETED")
+    )
+
+    transactionStorage.synchronized {
+      val accountTransactions = transactionStorage.getOrElseUpdate(fromAccountId, mutable.ListBuffer.empty)
+      accountTransactions.prepend(transaction)
+    }
 
     telemetry.recordPaymentSuccess(
       bankId = "workshop-bank-001",
@@ -274,11 +348,11 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
       currency = currency,
       correlationId = callContext.correlationId
     ) *>
-    telemetry.debug(s"Processing payment: $amount $currency", Some(callContext.correlationId)) *>
+    telemetry.debug(s"Processing payment: $amount $currency, stored transaction: $transactionId", Some(callContext.correlationId)) *>
     IO.pure(
       LocalAdapterResult.success(
         JsonObject(
-          "value" -> Json.fromString(s"tx-workshop-${System.currentTimeMillis()}")
+          "value" -> Json.fromString(transactionId)
         )
       )
     )
@@ -398,10 +472,11 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
       .orElse(data("accountId").flatMap(_.asString))
       .getOrElse("acc-001")
 
-    telemetry.debug(s"Getting transactions for account: $accountId", Some(callContext.correlationId)) *>
-    IO.pure(
-      LocalAdapterResult.success(
-        Json.arr(
+    val storedTransactions = transactionStorage.synchronized {
+      transactionStorage.getOrElse(accountId, mutable.ListBuffer.empty).toList
+    }
+
+    val staticTransactions = List(
           Json.obj(
             "uuid" -> Json.fromString("uuid-tx-001"),
             "id"   -> Json.obj("value" -> Json.fromString("tx-001")),
@@ -543,7 +618,14 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
             "balance"         -> Json.fromString("2000.00"),
             "status"          -> Json.fromString("COMPLETED")
           )
-        ),
+    )
+
+    val allTransactions = storedTransactions ++ staticTransactions
+
+    telemetry.debug(s"Getting transactions for account: $accountId, stored: ${storedTransactions.size}, static: ${staticTransactions.size}, total: ${allTransactions.size}", Some(callContext.correlationId)) *>
+    IO.pure(
+      LocalAdapterResult.success(
+        Json.arr(allTransactions: _*),
         Nil
       )
     )
