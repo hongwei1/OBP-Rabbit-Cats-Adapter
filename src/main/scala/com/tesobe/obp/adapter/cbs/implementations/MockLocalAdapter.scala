@@ -53,6 +53,7 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
       case "obp.getAccounts"         | "obp_get_core_bank_accounts" => getCoreBankAccounts(data, callContext)
       case "obp.getBankAccounts"     | "obp_get_bank_accounts"      => getBankAccounts(data, callContext)
       case "obp.getBankAccountsForUser" | "obp_get_bank_accounts_for_user" => getBankAccountsForUser(data, callContext)
+      case "obp.checkBankAccountExists" | "obp_check_bank_account_exists" => checkBankAccountExists(data, callContext)
       case "obp.getTransaction"      | "obp_get_transaction"        => getTransaction(data, callContext)
       case "obp.getTransactions"     | "obp_get_transactions"       => getTransactions(data, callContext)
       case "obp.checkFundsAvailable" | "obp_check_funds_available"  => checkFundsAvailable(data, callContext)
@@ -224,6 +225,45 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
     )
   }
 
+  private def checkBankAccountExists(data: JsonObject, callContext: CallContext): IO[LocalAdapterResult] = {
+    val bankId = data("bankId").flatMap(_.asObject).flatMap(_("value")).flatMap(_.asString).getOrElse("workshop-bank-001")
+    val accountId = data("accountId").flatMap(_.asObject).flatMap(_("value")).flatMap(_.asString).getOrElse("acc-001")
+
+    val validAccounts = Set("acc-001", "acc-002")
+    val validBanks = Set("workshop-bank-001", "test-bank-002")
+    
+    val exists = validBanks.contains(bankId) && validAccounts.contains(accountId)
+
+    telemetry.debug(s"Checking if account exists: bankId=$bankId, accountId=$accountId, exists=$exists", Some(callContext.correlationId)) *>
+    IO.pure(
+      if (exists) {
+        LocalAdapterResult.success(
+          Json.obj(
+            "accountId" -> Json.obj("value" -> Json.fromString(accountId)),
+            "accountType" -> Json.fromString("CURRENT"),
+            "balance" -> Json.fromString(if (accountId == "acc-001") "5000.00" else "3000.00"),
+            "currency" -> Json.fromString("EUR"),
+            "name" -> Json.fromString(if (accountId == "acc-001") "Alice Workshop Account" else "Bob Workshop Account"),
+            "number" -> Json.fromString(accountId),
+            "bankId" -> Json.obj("value" -> Json.fromString(bankId)),
+            "lastUpdate" -> Json.fromString("2024-03-18T00:00:00Z"),
+            "branchId" -> Json.fromString("branch-001"),
+            "accountRoutings" -> Json.arr(
+              Json.obj(
+                "scheme" -> Json.fromString("IBAN"),
+                "address" -> Json.fromString(if (accountId == "acc-001") "DE89370400440532013000" else "DE89370400440532013001")
+              )
+            ),
+            "attributes" -> Json.arr()
+          ),
+          Nil
+        )
+      } else {
+        LocalAdapterResult.error("OBP-30018", s"Account not found: bankId=$bankId, accountId=$accountId")
+      }
+    )
+  }
+
   private def makePaymentv210(data: JsonObject, callContext: CallContext): IO[LocalAdapterResult] = {
     val amount = data("amount").flatMap(_.asString).getOrElse("0.00")
     val currency = data("currency").flatMap(_.asString).getOrElse("EUR")
@@ -368,7 +408,7 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
             "thisAccount" -> Json.obj(
               "accountId"      -> Json.obj("value" -> Json.fromString(accountId)),
               "accountType"    -> Json.fromString("CURRENT"),
-              "balance"        -> Json.fromDouble(4950.00).getOrElse(Json.fromString("4950.00")),
+              "balance"        -> Json.fromString("4950.00"),
               "currency"       -> Json.fromString("EUR"),
               "name"           -> Json.fromString("Alice Workshop Account"),
               "label"          -> Json.fromString("Alice Workshop Account"),
@@ -383,7 +423,8 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
                 )
               ),
               "accountRules"   -> Json.arr(),
-              "accountHolder"  -> Json.fromString("Alice")
+              "accountHolder"  -> Json.fromString("Alice"),
+              "attributes"     -> Json.arr()
             ),
             "otherAccount" -> Json.obj(
               "nationalIdentifier"      -> Json.fromString("MERCHANT001"),
@@ -400,12 +441,12 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
               "isBeneficiary"           -> Json.fromBoolean(true)
             ),
             "transactionType" -> Json.fromString("DEBIT"),
-            "amount"          -> Json.fromDouble(-50.00).getOrElse(Json.fromString("-50.00")),
+            "amount"          -> Json.fromString("50.00"),
             "currency"        -> Json.fromString("EUR"),
             "description"     -> Json.fromString("Online purchase - Online Shop GmbH"),
             "startDate"       -> Json.fromString("2025-01-14T10:30:00Z"),
             "finishDate"      -> Json.fromString("2025-01-14T10:30:05Z"),
-            "balance"         -> Json.fromDouble(4950.00).getOrElse(Json.fromString("4950.00")),
+            "balance"         -> Json.fromString("4950.00"),
             "status"          -> Json.fromString("COMPLETED")
           ),
           Json.obj(
@@ -414,7 +455,7 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
             "thisAccount" -> Json.obj(
               "accountId"      -> Json.obj("value" -> Json.fromString(accountId)),
               "accountType"    -> Json.fromString("CURRENT"),
-              "balance"        -> Json.fromDouble(5000.00).getOrElse(Json.fromString("5000.00")),
+              "balance"        -> Json.fromString("5000.00"),
               "currency"       -> Json.fromString("EUR"),
               "name"           -> Json.fromString("Alice Workshop Account"),
               "label"          -> Json.fromString("Alice Workshop Account"),
@@ -429,7 +470,8 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
                 )
               ),
               "accountRules"   -> Json.arr(),
-              "accountHolder"  -> Json.fromString("Alice")
+              "accountHolder"  -> Json.fromString("Alice"),
+              "attributes"     -> Json.arr()
             ),
             "otherAccount" -> Json.obj(
               "nationalIdentifier"      -> Json.fromString("EMPLOYER001"),
@@ -446,12 +488,12 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
               "isBeneficiary"           -> Json.fromBoolean(false)
             ),
             "transactionType" -> Json.fromString("CREDIT"),
-            "amount"          -> Json.fromDouble(3000.00).getOrElse(Json.fromString("3000.00")),
+            "amount"          -> Json.fromString("3000.00"),
             "currency"        -> Json.fromString("EUR"),
             "description"     -> Json.fromString("Monthly salary - Employer Corp AG"),
             "startDate"       -> Json.fromString("2025-01-13T09:00:00Z"),
             "finishDate"      -> Json.fromString("2025-01-13T09:00:01Z"),
-            "balance"         -> Json.fromDouble(5000.00).getOrElse(Json.fromString("5000.00")),
+            "balance"         -> Json.fromString("5000.00"),
             "status"          -> Json.fromString("COMPLETED")
           ),
           Json.obj(
@@ -460,7 +502,7 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
             "thisAccount" -> Json.obj(
               "accountId"      -> Json.obj("value" -> Json.fromString(accountId)),
               "accountType"    -> Json.fromString("CURRENT"),
-              "balance"        -> Json.fromDouble(2000.00).getOrElse(Json.fromString("2000.00")),
+              "balance"        -> Json.fromString("2000.00"),
               "currency"       -> Json.fromString("EUR"),
               "name"           -> Json.fromString("Alice Workshop Account"),
               "label"          -> Json.fromString("Alice Workshop Account"),
@@ -475,7 +517,8 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
                 )
               ),
               "accountRules"   -> Json.arr(),
-              "accountHolder"  -> Json.fromString("Alice")
+              "accountHolder"  -> Json.fromString("Alice"),
+              "attributes"     -> Json.arr()
             ),
             "otherAccount" -> Json.obj(
               "nationalIdentifier"      -> Json.fromString("COFFEE001"),
@@ -492,12 +535,12 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
               "isBeneficiary"           -> Json.fromBoolean(true)
             ),
             "transactionType" -> Json.fromString("DEBIT"),
-            "amount"          -> Json.fromDouble(-25.50).getOrElse(Json.fromString("-25.50")),
+            "amount"          -> Json.fromString("25.50"),
             "currency"        -> Json.fromString("EUR"),
             "description"     -> Json.fromString("Coffee subscription - Brew & Co"),
             "startDate"       -> Json.fromString("2025-01-12T08:15:00Z"),
             "finishDate"      -> Json.fromString("2025-01-12T08:15:02Z"),
-            "balance"         -> Json.fromDouble(2000.00).getOrElse(Json.fromString("2000.00")),
+            "balance"         -> Json.fromString("2000.00"),
             "status"          -> Json.fromString("COMPLETED")
           )
         ),
