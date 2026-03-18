@@ -1173,7 +1173,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"is_bank_id_exact_match\": false,\n    \"method_name\": \"checkBankAccountExists\",\n    \"connector_name\": \"rabbitmq_vOct2024\",\n    \"bank_id_pattern\": \".*\",\n    \"parameters\": []\n}",
+          "raw": "{\n    \"is_bank_id_exact_match\": false,\n    \"method_name\": \"getTransaction\",\n    \"connector_name\": \"rabbitmq_vOct2024\",\n    \"bank_id_pattern\": \".*\",\n    \"parameters\": []\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1290,7 +1290,7 @@
           "header": [
             {
               "key": "Date",
-              "value": "Wed, 18 Mar 2026 22:43:36 GMT"
+              "value": "Wed, 18 Mar 2026 23:31:07 GMT"
             },
             {
               "key": "Connection",
@@ -1298,7 +1298,7 @@
             },
             {
               "key": "Content-Length",
-              "value": "1823"
+              "value": "2022"
             },
             {
               "key": "Content-Type",
@@ -1322,11 +1322,11 @@
             },
             {
               "key": "ETag",
-              "value": "aba83ecbb9e6570049faea123dec3798971ad81760f97b3f241bb9970a48c2e0"
+              "value": "6648d84a6cbefcee49a15ab49e4cd7b8093f30a7fd7eeff4a6744cba33bbd4b9"
             },
             {
               "key": "Correlation-Id",
-              "value": "7e4098a2-37db-4fa7-900e-6e1cc7aba577"
+              "value": "e685d875-c62c-42f9-a311-a456ed810ec9"
             },
             {
               "key": "Cache-Control",
@@ -1338,7 +1338,7 @@
             },
             {
               "key": "Expires",
-              "value": "Wed, 18 Mar 2026 22:43:36 GMT"
+              "value": "Wed, 18 Mar 2026 23:31:07 GMT"
             },
             {
               "key": "X-Frame-Options",
@@ -1346,7 +1346,7 @@
             }
           ],
           "cookie": [],
-          "body": "{\n    \"method_routings\": [\n        {\n            \"method_name\": \"checkBankAccountExists\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"9da6e3fd-a3ee-41d7-af88-00487997d4e2\"\n        },\n        {\n            \"method_name\": \"getAdapterInfo\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"1f0f8951-33de-4362-a8b3-2a989c625fd4\"\n        },\n        {\n            \"method_name\": \"getBank\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"47f38753-c7fc-4a49-8502-90c32f4c5ef9\"\n        },\n        {\n            \"method_name\": \"getBankAccounts\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"219e5708-9494-425b-8251-ac2c5dbef500\"\n        },\n        {\n            \"method_name\": \"getBankAccountsForUser\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"37364297-39cd-41d4-9de4-d4d8c6a4a5e4\"\n        },\n        {\n            \"method_name\": \"getBanks\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"c880625a-edc9-4e81-8f1b-289c3a286f2c\"\n        },\n        {\n            \"method_name\": \"getCoreBankAccounts\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"62d0a449-a436-40ea-852e-19db9f136347\"\n        },\n        {\n            \"method_name\": \"getTransactions\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"05de1907-0a96-4f3a-a07e-bbd7c561b6b5\"\n        },\n        {\n            \"method_name\": \"makePaymentv210\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"1dc85845-fa61-4d15-a1da-ec86c401b88a\"\n        }\n    ]\n}"
+          "body": "{\n    \"method_routings\": [\n        {\n            \"method_name\": \"checkBankAccountExists\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"9da6e3fd-a3ee-41d7-af88-00487997d4e2\"\n        },\n        {\n            \"method_name\": \"getAdapterInfo\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"1f0f8951-33de-4362-a8b3-2a989c625fd4\"\n        },\n        {\n            \"method_name\": \"getBank\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"47f38753-c7fc-4a49-8502-90c32f4c5ef9\"\n        },\n        {\n            \"method_name\": \"getBankAccounts\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"219e5708-9494-425b-8251-ac2c5dbef500\"\n        },\n        {\n            \"method_name\": \"getBankAccountsForUser\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"37364297-39cd-41d4-9de4-d4d8c6a4a5e4\"\n        },\n        {\n            \"method_name\": \"getBanks\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"c880625a-edc9-4e81-8f1b-289c3a286f2c\"\n        },\n        {\n            \"method_name\": \"getCoreBankAccounts\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"62d0a449-a436-40ea-852e-19db9f136347\"\n        },\n        {\n            \"method_name\": \"getTransaction\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"7b8ba565-9a75-4e57-a42d-0b7fef4215bc\"\n        },\n        {\n            \"method_name\": \"getTransactions\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"05de1907-0a96-4f3a-a07e-bbd7c561b6b5\"\n        },\n        {\n            \"method_name\": \"makePaymentv210\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"1dc85845-fa61-4d15-a1da-ec86c401b88a\"\n        }\n    ]\n}"
         }
       ]
     },
@@ -1891,6 +1891,131 @@
           ],
           "cookie": [],
           "body": "{\n    \"transactions\": [\n        {\n            \"id\": \"tx-001\",\n            \"this_account\": {\n                \"id\": \"acc-001\",\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"MOCKBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE89370400440532013000\"\n                    }\n                ],\n                \"holders\": [\n                    {\n                        \"name\": \"workshop.user\",\n                        \"is_alias\": false\n                    }\n                ]\n            },\n            \"other_account\": {\n                \"id\": \"cp-merchant-001\",\n                \"holder\": {\n                    \"name\": \"Online Shop GmbH\",\n                    \"is_alias\": false\n                },\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"SHOPBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE12345678901234567890\"\n                    }\n                ],\n                \"metadata\": {\n                    \"public_alias\": \"ALIAS_E1D77C\",\n                    \"private_alias\": null,\n                    \"more_info\": null,\n                    \"URL\": null,\n                    \"image_URL\": null,\n                    \"open_corporates_URL\": null,\n                    \"corporate_location\": null,\n                    \"physical_location\": null\n                }\n            },\n            \"details\": {\n                \"type\": \"DEBIT\",\n                \"description\": \"Online purchase - Online Shop GmbH\",\n                \"posted\": \"2025-01-14T10:30:00Z\",\n                \"completed\": \"2025-01-14T10:30:05Z\",\n                \"new_balance\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"4950.00\"\n                },\n                \"value\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"50.00\"\n                }\n            },\n            \"metadata\": {\n                \"narrative\": null,\n                \"comments\": [],\n                \"tags\": [],\n                \"images\": [],\n                \"where\": null\n            },\n            \"transaction_attributes\": []\n        },\n        {\n            \"id\": \"tx-002\",\n            \"this_account\": {\n                \"id\": \"acc-001\",\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"MOCKBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE89370400440532013000\"\n                    }\n                ],\n                \"holders\": [\n                    {\n                        \"name\": \"workshop.user\",\n                        \"is_alias\": false\n                    }\n                ]\n            },\n            \"other_account\": {\n                \"id\": \"cp-employer-001\",\n                \"holder\": {\n                    \"name\": \"Employer Corp AG\",\n                    \"is_alias\": false\n                },\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"EMPLBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE98765432109876543210\"\n                    }\n                ],\n                \"metadata\": {\n                    \"public_alias\": \"ALIAS_B36A9A\",\n                    \"private_alias\": null,\n                    \"more_info\": null,\n                    \"URL\": null,\n                    \"image_URL\": null,\n                    \"open_corporates_URL\": null,\n                    \"corporate_location\": null,\n                    \"physical_location\": null\n                }\n            },\n            \"details\": {\n                \"type\": \"CREDIT\",\n                \"description\": \"Monthly salary - Employer Corp AG\",\n                \"posted\": \"2025-01-13T09:00:00Z\",\n                \"completed\": \"2025-01-13T09:00:01Z\",\n                \"new_balance\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"5000.00\"\n                },\n                \"value\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"3000.00\"\n                }\n            },\n            \"metadata\": {\n                \"narrative\": null,\n                \"comments\": [],\n                \"tags\": [],\n                \"images\": [],\n                \"where\": null\n            },\n            \"transaction_attributes\": []\n        },\n        {\n            \"id\": \"tx-003\",\n            \"this_account\": {\n                \"id\": \"acc-001\",\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"MOCKBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE89370400440532013000\"\n                    }\n                ],\n                \"holders\": [\n                    {\n                        \"name\": \"workshop.user\",\n                        \"is_alias\": false\n                    }\n                ]\n            },\n            \"other_account\": {\n                \"id\": \"cp-coffee-001\",\n                \"holder\": {\n                    \"name\": \"Brew & Co\",\n                    \"is_alias\": false\n                },\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"BREWBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE11223344556677889900\"\n                    }\n                ],\n                \"metadata\": {\n                    \"public_alias\": \"ALIAS_7648D7\",\n                    \"private_alias\": null,\n                    \"more_info\": null,\n                    \"URL\": null,\n                    \"image_URL\": null,\n                    \"open_corporates_URL\": null,\n                    \"corporate_location\": null,\n                    \"physical_location\": null\n                }\n            },\n            \"details\": {\n                \"type\": \"DEBIT\",\n                \"description\": \"Coffee subscription - Brew & Co\",\n                \"posted\": \"2025-01-12T08:15:00Z\",\n                \"completed\": \"2025-01-12T08:15:02Z\",\n                \"new_balance\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"2000.00\"\n                },\n                \"value\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"25.50\"\n                }\n            },\n            \"metadata\": {\n                \"narrative\": null,\n                \"comments\": [],\n                \"tags\": [],\n                \"images\": [],\n                \"where\": null\n            },\n            \"transaction_attributes\": []\n        }\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Transaction by Id",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/obp/v5.0.0/banks/{{bank_id}}/accounts/{{account_id}}/owner/transactions/tx-workshop-1773876558488/transaction",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "obp",
+            "v5.0.0",
+            "banks",
+            "{{bank_id}}",
+            "accounts",
+            "{{account_id}}",
+            "owner",
+            "transactions",
+            "tx-workshop-1773876558488",
+            "transaction"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Transaction by Id",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/obp/v5.0.0/banks/{{bank_id}}/accounts/{{account_id}}/owner/transactions/tx-workshop-1773876558488/transaction",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "obp",
+                "v5.0.0",
+                "banks",
+                "{{bank_id}}",
+                "accounts",
+                "{{account_id}}",
+                "owner",
+                "transactions",
+                "tx-workshop-1773876558488",
+                "transaction"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Wed, 18 Mar 2026 23:29:32 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Content-Length",
+              "value": "981"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "X-Rate-Limit-Reset",
+              "value": "1"
+            },
+            {
+              "key": "X-Rate-Limit-Remaining",
+              "value": "0"
+            },
+            {
+              "key": "X-Rate-Limit-Limit",
+              "value": "-1"
+            },
+            {
+              "key": "ETag",
+              "value": "8e721351daad89af8d9256114a472c322448b2e7b744a41de7a26838fb3ca9a8"
+            },
+            {
+              "key": "Correlation-Id",
+              "value": "e705240f-f247-421d-b1da-e54d06d4cb57"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, private, no-store"
+            },
+            {
+              "key": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "Expires",
+              "value": "Wed, 18 Mar 2026 23:29:32 GMT"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"id\": \"tx-workshop-1773876558488\",\n    \"this_account\": {\n        \"id\": \"acc-001\",\n        \"bank_routing\": {\n            \"scheme\": null,\n            \"address\": null\n        },\n        \"account_routings\": [\n            {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE89370400440532013000\"\n            }\n        ],\n        \"holders\": [\n            {\n                \"name\": \"workshop.user\",\n                \"is_alias\": false\n            }\n        ]\n    },\n    \"other_account\": {\n        \"id\": \"cp-acc-002\",\n        \"holder\": {\n            \"name\": \"Payment Recipient\",\n            \"is_alias\": false\n        },\n        \"bank_routing\": {\n            \"scheme\": \"BIC\",\n            \"address\": \"RECIPBIC0\"\n        },\n        \"account_routings\": [\n            {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE98765432109876543210\"\n            }\n        ],\n        \"metadata\": {\n            \"public_alias\": \"ALIAS_FA4491\",\n            \"private_alias\": null,\n            \"more_info\": null,\n            \"URL\": null,\n            \"image_URL\": null,\n            \"open_corporates_URL\": null,\n            \"corporate_location\": null,\n            \"physical_location\": null\n        }\n    },\n    \"details\": {\n        \"type\": \"DEBIT\",\n        \"description\": \"Workshop test payment\",\n        \"posted\": \"2026-03-18T23:29:18Z\",\n        \"completed\": \"2026-03-18T23:29:18Z\",\n        \"new_balance\": {\n            \"currency\": \"EUR\",\n            \"amount\": \"4950.00\"\n        },\n        \"value\": {\n            \"currency\": \"EUR\",\n            \"amount\": \"10.00\"\n        }\n    },\n    \"metadata\": {\n        \"narrative\": null,\n        \"comments\": [],\n        \"tags\": [],\n        \"images\": [],\n        \"where\": null\n    },\n    \"transaction_attributes\": []\n}"
         }
       ]
     }

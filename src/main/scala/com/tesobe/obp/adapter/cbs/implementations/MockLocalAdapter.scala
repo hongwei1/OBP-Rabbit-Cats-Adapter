@@ -447,23 +447,91 @@ class MockLocalAdapter(telemetry: Telemetry) extends LocalAdapter {
   }
 
   private def getTransaction(data: JsonObject, callContext: CallContext): IO[LocalAdapterResult] = {
-    val transactionId = data("transactionId").flatMap(_.asString).getOrElse("unknown")
+    val transactionId = data("transactionId")
+      .flatMap(_.asObject).flatMap(_("value")).flatMap(_.asString)
+      .orElse(data("transactionId").flatMap(_.asString))
+      .getOrElse("tx-001")
+    
+    val bankId = data("bankId")
+      .flatMap(_.asObject).flatMap(_("value")).flatMap(_.asString)
+      .orElse(data("bankId").flatMap(_.asString))
+      .getOrElse("workshop-bank-001")
+    
+    val accountId = data("accountId")
+      .flatMap(_.asObject).flatMap(_("value")).flatMap(_.asString)
+      .orElse(data("accountId").flatMap(_.asString))
+      .getOrElse("acc-001")
 
-    telemetry.debug(s"Getting transaction: $transactionId", Some(callContext.correlationId)) *>
+    val allTransactions = transactionStorage.synchronized {
+      transactionStorage.values.flatten.toList
+    }
+
+    val foundTransaction = allTransactions.find { txn =>
+      txn.asObject.flatMap(_("id")).flatMap(_.asObject).flatMap(_("value")).flatMap(_.asString).contains(transactionId)
+    }
+
+    telemetry.debug(s"Getting transaction: $transactionId for account: $accountId, found in storage: ${foundTransaction.isDefined}", Some(callContext.correlationId)) *>
     IO.pure(
-      LocalAdapterResult.success(
-        JsonObject(
-          "transactionId" -> Json.fromString(transactionId),
-          "accountId" -> data("accountId").getOrElse(Json.fromString("account-123")),
-          "amount" -> Json.fromString("50.00"),
-          "currency" -> Json.fromString("EUR"),
-          "description" -> Json.fromString("Mock transaction"),
-          "posted" -> Json.fromString("2025-01-14T10:30:00Z"),
-          "completed" -> Json.fromString("2025-01-14T10:30:00Z"),
-          "newBalance" -> Json.fromString("1000.50"),
-          "type" -> Json.fromString("DEBIT")
-        )
-      )
+      foundTransaction match {
+        case Some(txn) =>
+          LocalAdapterResult.success(txn.asObject.getOrElse(JsonObject.empty))
+        case None =>
+          LocalAdapterResult.success(
+            JsonObject(
+              "id" -> Json.obj("value" -> Json.fromString(transactionId)),
+              "thisAccount" -> Json.obj(
+                "accountId" -> Json.obj("value" -> Json.fromString(accountId)),
+                "accountType" -> Json.fromString("AC"),
+                "balance" -> Json.fromString("5000.00"),
+                "currency" -> Json.fromString("EUR"),
+                "name" -> Json.fromString("Workshop Account"),
+                "label" -> Json.fromString("My Workshop Account"),
+                "number" -> Json.fromString(accountId),
+                "bankId" -> Json.obj("value" -> Json.fromString(bankId)),
+                "lastUpdate" -> Json.fromString("2024-03-18T00:00:00Z"),
+                "branchId" -> Json.fromString("branch-001"),
+                "accountRoutings" -> Json.arr(
+                  Json.obj(
+                    "scheme" -> Json.fromString("IBAN"),
+                    "address" -> Json.fromString("DE89370400440532013000")
+                  )
+                ),
+                "accountRules" -> Json.arr(
+                  Json.obj(
+                    "scheme" -> Json.fromString("AccountRule scheme"),
+                    "value" -> Json.fromString("AccountRule value")
+                  )
+                ),
+                "accountHolder" -> Json.fromString("Workshop User"),
+                "attributes" -> Json.arr(
+                  Json.obj(
+                    "name" -> Json.fromString("STATUS"),
+                    "type" -> Json.fromString("STRING"),
+                    "value" -> Json.fromString("active")
+                  )
+                )
+              ),
+              "otherAccount" -> Json.obj(
+                "kind" -> Json.fromString("Counterparty"),
+                "counterpartyId" -> Json.fromString("cp-merchant-001"),
+                "counterpartyName" -> Json.fromString("Online Shop GmbH"),
+                "thisBankId" -> Json.obj("value" -> Json.fromString("")),
+                "thisAccountId" -> Json.obj("value" -> Json.fromString("")),
+                "otherAccountRoutingScheme" -> Json.fromString("IBAN"),
+                "otherAccountRoutingAddress" -> Json.fromString("DE98765432109876543210"),
+                "isBeneficiary" -> Json.fromBoolean(false)
+              ),
+              "transactionType" -> Json.fromString("DEBIT"),
+              "amount" -> Json.fromString("50.00"),
+              "currency" -> Json.fromString("EUR"),
+              "description" -> Json.fromString("Online purchase - Workshop transaction"),
+              "startDate" -> Json.fromString("2024-01-14T10:30:00Z"),
+              "finishDate" -> Json.fromString("2024-01-14T10:30:00Z"),
+              "balance" -> Json.fromString("4950.00"),
+              "status" -> Json.fromString("COMPLETED")
+            )
+          )
+      }
     )
   }
 
